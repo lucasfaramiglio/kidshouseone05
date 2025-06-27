@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Sweet Home - Enhanced Kids Version</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --orange: #F57C00;
+            --purple: #6A1B9A;
+            --white: #FFFFFF;
+            --green: #4CAF50;
+            --pink: #E91E63;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: var(--white);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.5s;
+            position: relative;
+        }
+        
+        /* Logo styling */
+        .logo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: auto;
+            z-index: 1000;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .page {
+            min-height: 100vh;
+            padding: 10px;
+            padding-top: 60px; /* Space for logo */
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .active-page {
+            display: flex;
+        }
+        
+        h1 {
+            color: var(--purple);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            margin-top: 5px;
+        }
+        
+        h2 {
+            color: var(--orange);
+            border-bottom: 3px dashed var(--purple);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .activity-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 8px 0;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 4px solid var(--purple);
+        }
+        
+        .conversation-bubble {
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            color: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 10px;
+            position: relative;
+            max-width: 80%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .conversation-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid var(--purple);
+        }
+        
+        .story-mode {
+            background: linear-gradient(135deg, #FF6B35, var(--orange));
+            border: none;
+            font-style: italic;
+        }
+        
+        button {
+            background-color: var(--orange);
+            color: var(--white);
+            border: 3px solid var(--purple);
+            padding: 8px 20px;
+            margin: 5px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: #E65100;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .voice-button {
+            background: linear-gradient(135deg, var(--green), #2E7D32);
+            border: 3px solid #1B5E20;
+        }
+        
+        .story-button {
+            background: linear-gradient(135deg, var(--pink), #AD1457);
+            border: 3px solid #880E4F;
+        }
+        
+        input, textarea {
+            padding: 10px;
+            margin: 10px;
+            border: 3px solid var(--orange);
+            border-radius: 20px;
+            font-size: 16px;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            text-align: left;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .home-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        ul {
+            text-align: left;
+            display: inline-block;
+            font-size: 18px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        .room-item {
+            font-size: 48px;
+            margin: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+        
+        .room-item:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Special elements */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--orange);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Feedback modal */
+        .feedback-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .feedback-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            border: 5px solid var(--purple);
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .feedback-emoji {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite;
+        }
+        
+        .close-feedback {
+            background-color: var(--purple);
+            color: var(--white);
+            margin-top: 20px;
+        }
+        
+        /* Draggable elements */
+        .draggable {
+            font-size: 36px;
+            margin: 10px;
+            cursor: move;
+            user-select: none;
+        }
+        
+        .dropzone {
+            border: 3px dashed var(--orange);
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 120px;
+            background-color: rgba(255,255,255,0.7);
+        }
+        
+        .dropzone.highlight {
+            background-color: rgba(106,27,154,0.1);
+        }
+        
+        .chat-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 3px solid var(--purple);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--orange));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .achievement-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD700, #FFA000);
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: bold;
+            border: 2px solid #FF8F00;
+        }
+
+        .room-container {
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo -->
+    <img src="1ohfive.png" alt="JohFive Logo" class="logo">
+
+    <!-- Feedback modal -->
+    <div class="feedback-modal" id="feedbackModal">
+        <div class="feedback-content">
+            <div class="feedback-emoji" id="feedbackEmoji">🎉</div>
+            <h2 id="feedbackTitle">Great Job!</h2>
+            <p id="feedbackMessage">You're doing amazing!</p>
+            <button class="close-feedback" onclick="closeFeedback()">Keep Playing! 🚀</button>
+        </div>
+    </div>
+
+    <!-- Home Page -->
+    <div class="page active-page" id="home">
+        <div class="home-icon">🏠</div>
+        <h1>Home Sweet Home</h1>
+        <h2>Enhanced Kids Edition</h2>
+        
+        <div class="activity-card">
+            <input type="text" placeholder="My name is..." id="student-name">
+            <button onclick="setStudentName()">Nice to meet you! 👋</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>Your Progress Journey</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="main-progress" style="width: 0%"></div>
+            </div>
+            <div id="badges-container">
+                <!-- Achievement badges will appear here -->
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('conversation')">💬 Chat About Home</button>
+            <button onclick="showPage('where-live')">🏡 Where Do You Live?</button>
+            <button onclick="showPage('match-rooms')">🛏️ Match the Rooms</button>
+            <button onclick="showPage('kitchen')">🍽️ What's in the Kitchen?</button>
+            <button onclick="showPage('silly-house')">😄 My Silly House</button>
+            <button onclick="showPage('story-time')">📚 Home Stories</button>
+            <button onclick="showPage('compare-homes')">🌍 Homes Around the World</button>
+            <button onclick="showPage('likes')">❤️ Things I Like</button>
+            <button onclick="showPage('draw-house')">🎨 Draw Your House</button>
+        </div>
+    </div>
+
+    <!-- Conversation Page -->
+    <div class="page" id="conversation">
+        <h1>💬 Let's Chat About Your Home!</h1>
+        
+        <div class="activity-card">
+            <div class="chat-container" id="chat-container">
+                <div class="conversation-bubble">
+                    <p>Tell me about your home</p>
+                </div>
+            </div>
+            <textarea placeholder="Tell me about your home..." id="chat-input"></textarea>
+            <button onclick="sendChatMessage()" class="voice-button">Send Message 💬</button>
+            <button onclick="askRandomQuestion()" class="story-button">Ask Me Something! 🎲</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>Quick Chat Topics</h2>
+            <button onclick="startTopic('favorite-room')">My Favorite Room 🛏️</button>
+            <button onclick="startTopic('family-time')">Family Time 👨‍👩‍👧‍👦</button>
+            <button onclick="startTopic('home-sounds')">Sounds in My Home 🔊</button>
+            <button onclick="startTopic('morning-routine')">My Morning 🌅</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Story Time Page -->
+    <div class="page" id="story-time">
+        <h1>📚 Home Stories & Adventures</h1>
+        
+        <div class="activity-card">
+            <h2>Choose Your Story Adventure!</h2>
+            <button onclick="tellStory('lost-toy')">The Lost Toy Mystery 🧸</button>
+            <button onclick="tellStory('moving-day')">Moving to a New Home 📦</button>
+            <button onclick="tellStory('magic-house')">The Magic House 🪄</button>
+            <button onclick="tellStory('pet-adventure')">Pet's Home Adventure 🐕</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>Create Your Own Story!</h2>
+            <textarea placeholder="If my house could talk, it would say..." id="house-story"></textarea>
+            <button onclick="shareStory()" class="story-button">Share My Story! 📖</button>
+        </div>
+
+        <div class="activity-card" id="story-display" style="display: none;">
+            <h2>Your Story Adventure</h2>
+            <div class="conversation-bubble story-mode" id="story-content">
+                <!-- Story content will appear here -->
+            </div>
+            <button onclick="continueStory()" class="story-button">What Happens Next? ➡️</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Compare Homes Page -->
+    <div class="page" id="compare-homes">
+        <h1>🌍 Homes Around the World</h1>
+        
+        <div class="activity-card">
+            <h2>Compare Your Home</h2>
+            <input type="text" placeholder="My home is made of..." id="home-material">
+            <input type="text" placeholder="My home has ... rooms" id="home-rooms">
+            <button onclick="compareHomes()" class="voice-button">Compare! 🔍</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>World Home Tour</h2>
+            <button onclick="exploreHome('igloo')">Arctic Igloo ❄️</button>
+            <button onclick="exploreHome('houseboat')">Floating Houseboat 🛥️</button>
+            <button onclick="exploreHome('treehouse')">Tree House 🌳</button>
+            <button onclick="exploreHome('apartment')">City Apartment 🏢</button>
+            <button onclick="exploreHome('farmhouse')">Country Farmhouse 🚜</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>Home Similarities & Differences</h2>
+            <textarea placeholder="All homes have..." id="home-commonalities"></textarea>
+            <button onclick="discussCommonalities()" class="voice-button">Share Ideas! 💡</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Where Do You Live Page -->
+    <div class="page" id="where-live">
+        <h1>🏡 Where Do You Live?</h1>
+        
+        <div class="activity-card">
+            <h2>What type of home do you live in?</h2>
+            <input type="text" placeholder="I live in a..." id="home-type">
+            <button onclick="saveHomeType()" class="voice-button">Save My Home Type</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>Tell me more about your neighborhood!</h2>
+            <textarea placeholder="From my window, I can see..." id="window-view"></textarea>
+            <button onclick="discussView()" class="voice-button">Tell Me More! 🗨️</button>
+        </div>
+
+        <div class="activity-card">
+            <h2>What color is your home?</h2>
+            <button onclick="showFeedback('🤍', 'White', 'White homes look clean and bright!')">White</button>
+            <button onclick="showFeedback('🤎', 'Brown', 'Brown homes are warm and cozy')">Brown</button>
+            <button onclick="showFeedback('🔴', 'Red', 'Red homes are bold and cheerful')">Red</button>
+            <button onclick="showFeedback('🟡', 'Yellow', 'Yellow homes are bright and happy')">Yellow</button>
+            <button onclick="showFeedback('🔵', 'Blue', 'Blue homes are calm like the ocean')">Blue</button>
+            <button onclick="showFeedback('🟢', 'Green', 'Green homes blend with nature')">Green</button>
+            <button onclick="showFeedback('🟠', 'Orange', 'Orange homes are vibrant and fun')">Orange</button>
+            <button onclick="showFeedback('🟣', 'Purple', 'Purple homes are royal and special')">Purple</button>
+            <button onclick="showFeedback('⚫', 'Black', 'Black homes are modern and sleek')">Black</button>
+            <button onclick="showFeedback('⚪', 'Gray', 'Gray homes are neutral and stylish')">Gray</button>
+            <button onclick="customColor()" class="voice-button">Other Color 🎨</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Match the Rooms Page -->
+    <div class="page" id="match-rooms">
+        <h1>🛏️ Let's Explore the Rooms</h1>
+        
+        <div class="activity-card">
+            <h2>Select a room to describe:</h2>
+            <div>
+                <button onclick="showRoomInput('bedroom')">Bedroom 🛏️</button>
+                <button onclick="showRoomInput('bathroom')">Bathroom 🚿</button>
+                <button onclick="showRoomInput('kitchen')">Kitchen 🍽️</button>
+                <button onclick="showRoomInput('living')">Living Room 🛋️</button>
+                <button onclick="showRoomInput('garden')">Garden 🌻</button>
+                <button onclick="showRoomInput('other')">Other Room 🏠</button>
+            </div>
+            
+            <!-- Bedroom -->
+            <div id="bedroom-container" class="room-container">
+                <h3>Bedroom 🛏️</h3>
+                <textarea placeholder="List things in your bedroom (bed, dresser, toys...)" id="bedroom-items"></textarea>
+                <button onclick="saveRoomItems('bedroom')">Save Bedroom Items</button>
+            </div>
+            
+            <!-- Bathroom -->
+            <div id="bathroom-container" class="room-container">
+                <h3>Bathroom 🚿</h3>
+                <textarea placeholder="List things in your bathroom (sink, toilet, shower...)" id="bathroom-items"></textarea>
+                <button onclick="saveRoomItems('bathroom')">Save Bathroom Items</button>
+            </div>
+            
+            <!-- Kitchen -->
+            <div id="kitchen-container" class="room-container">
+                <h3>Kitchen 🍽️</h3>
+                <textarea placeholder="List things in your kitchen (stove, fridge, table...)" id="kitchen-items"></textarea>
+                <button onclick="saveRoomItems('kitchen')">Save Kitchen Items</button>
+            </div>
+            
+            <!-- Living Room -->
+            <div id="living-container" class="room-container">
+                <h3>Living Room 🛋️</h3>
+                <textarea placeholder="List things in your living room (sofa, TV, rug...)" id="living-items"></textarea>
+                <button onclick="saveRoomItems('living')">Save Living Room Items</button>
+            </div>
+            
+            <!-- Garden -->
+            <div id="garden-container" class="room-container">
+                <h3>Garden 🌻</h3>
+                <textarea placeholder="List things in your garden (plants, swing, flowers...)" id="garden-items"></textarea>
+                <button onclick="saveRoomItems('garden')">Save Garden Items</button>
+            </div>
+            
+            <!-- Other Room -->
+            <div id="other-container" class="room-container">
+                <h3>Other Room 🏠</h3>
+                <input type="text" placeholder="Room name" id="other-room-name">
+                <textarea placeholder="List things in this room..." id="other-items"></textarea>
+                <button onclick="saveRoomItems('other')">Save Room Items</button>
+            </div>
+        </div>
+
+        <div class="activity-card" id="saved-rooms-display" style="display: none;">
+            <h2>Your Room Items</h2>
+            <div id="saved-rooms-content">
+                <!-- Saved room content will appear here -->
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Kitchen Page -->
+    <div class="page" id="kitchen">
+        <h1>🍽️ What's in the Kitchen?</h1>
+        
+        <div class="activity-card">
+            <textarea placeholder="In my kitchen, I can see..." id="kitchen-description"></textarea>
+            <button onclick="discussKitchen()" class="voice-button">Tell Me More! 🗨️</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="For breakfast I had... and I ate it..." id="breakfast-memory"></textarea>
+            <button onclick="shareBreakfastMemory()" class="voice-button">Share Memory! 🧠</button>
+        </div>
+
+        <div class="activity-card">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                <button onclick="addIngredient('🍞')">Bread</button>
+                <button onclick="addIngredient('🧀')">Cheese</button>
+                <button onclick="addIngredient('🥬')">Lettuce</button>
+                <button onclick="addIngredient('🍅')">Tomato</button>
+                <button onclick="addIngredient('🥓')">Bacon</button>
+                <button onclick="addIngredient('🥒')">Pickles</button>
+            </div>
+            <div id="sandwich" style="min-height: 60px; margin: 15px; font-size: 24px;"></div>
+            <button onclick="celebrateSandwich()">My Sandwich is Ready!</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Silly House Page -->
+    <div class="page" id="silly-house">
+        <h1>😄 My Silly House</h1>
+        
+        <div class="activity-card">
+            <h2>Is the couch in the bathroom? Say YES or NO!</h2>
+            <button onclick="showFeedback('😂', 'No', 'Couches belong in the living room!'); continueSillyConversation()">NO</button>
+            <button onclick="showFeedback('🤪', 'Yes', 'That would be very strange!'); continueSillyConversation()">YES</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="I would put a... in my..." id="silly-idea"></textarea>
+            <button onclick="shareSillyIdea()" class="story-button">Share Silly Idea! 🤹</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="In my silly house, everyone must..." id="silly-rules"></textarea>
+            <button onclick="createSillyRules()" class="story-button">Make Silly Rules! 🎭</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Things I Like Page -->
+    <div class="page" id="likes">
+        <h1>❤️ Things I Like</h1>
+        
+        <div class="activity-card">
+            <h2>Click what you like to do at home!</h2>
+            <button onclick="showFeedback('📺', 'Watching TV', 'Watching TV is fun!'); askAboutActivity('tv')">Watching TV 📺</button>
+            <button onclick="showFeedback('😴', 'Sleeping', 'Sleep is super important!'); askAboutActivity('sleep')">Sleeping 🛌</button>
+            <button onclick="showFeedback('📚', 'Reading', 'Reading takes you on amazing adventures!'); askAboutActivity('reading')">Reading Books 📚</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="On rainy days, I love to..." id="rainy-day-activity"></textarea>
+            <button onclick="discussRainyDay()" class="voice-button">Tell Me More! 🌧️</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="The most fun thing we do together is..." id="family-fun"></textarea>
+            <button onclick="shareFamilyTime()" class="voice-button">Share the Fun! 🎉</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <!-- Draw Your House Page -->
+    <div class="page" id="draw-house">
+        <h1>🎨 Draw Your House</h1>
+        
+        <div class="activity-card">
+            <textarea placeholder="I'm drawing my house with... It looks like..." id="house-description"></textarea>
+            <button onclick="celebrateDrawing()" class="voice-button">Share My Art! 🎨</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="My house has..." id="house-features"></textarea>
+            <button onclick="shareHouseFeatures()" class="voice-button">Share Features! 🏡</button>
+        </div>
+
+        <div class="activity-card">
+            <textarea placeholder="My dream house would have..." id="dream-house"></textarea>
+            <button onclick="shareDreamHouse()" class="story-button">Share Dream House! ✨</button>
+        </div>
+        
+        <div class="nav-buttons">
+            <button onclick="showPage('home')">← Back Home</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let studentName = "";
+        let currentProgress = 0;
+        let earnedBadges = [];
+        let currentStory = null;
+        let sandwichIngredients = [];
+        let savedRooms = {};
+        
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active-page');
+            });
+            document.getElementById(pageId).classList.add('active-page');
+            updateProgress(1);
+        }
+        
+        // Student name
+        function setStudentName() {
+            const nameInput = document.getElementById('student-name');
+            studentName = nameInput.value.trim();
+            if (studentName) {
+                showFeedback('👋', 'Welcome!', `Nice to meet you, ${studentName}!`);
+                updateProgress(5);
+            } else {
+                showFeedback('🤔', 'Oops!', 'Please tell me your name!');
+            }
+        }
+        
+        // Home type
+        function saveHomeType() {
+            const homeType = document.getElementById('home-type').value.trim();
+            if (homeType) {
+                showFeedback('🏠', 'Home Saved!', `You live in a ${homeType}!`);
+                updateProgress(5);
+            }
+        }
+        
+        // Room items functions
+        function showRoomInput(room) {
+            // Hide all room containers first
+            document.querySelectorAll('.room-container').forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Show the selected room container
+            document.getElementById(`${room}-container`).style.display = 'block';
+        }
+        
+        function saveRoomItems(room) {
+            let roomName = room;
+            let items = '';
+            
+            if (room === 'other') {
+                roomName = document.getElementById('other-room-name').value.trim() || 'Other Room';
+                items = document.getElementById('other-items').value.trim();
+            } else {
+                items = document.getElementById(`${room}-items`).value.trim();
+            }
+            
+            if (items) {
+                savedRooms[roomName] = items.split('\n').filter(item => item.trim() !== '');
+                
+                // Update display
+                updateSavedRoomsDisplay();
+                
+                showFeedback('✅', 'Saved!', `Items saved for ${roomName}`);
+                updateProgress(3);
+            }
+        }
+        
+        function updateSavedRoomsDisplay() {
+            const container = document.getElementById('saved-rooms-content');
+            container.innerHTML = '';
+            
+            for (const [room, items] of Object.entries(savedRooms)) {
+                const roomDiv = document.createElement('div');
+                roomDiv.className = 'conversation-bubble';
+                roomDiv.style.margin = '10px 0';
+                
+                const roomTitle = document.createElement('h3');
+                roomTitle.textContent = `${room}:`;
+                roomDiv.appendChild(roomTitle);
+                
+                const itemsList = document.createElement('ul');
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    itemsList.appendChild(li);
+                });
+                roomDiv.appendChild(itemsList);
+                
+                container.appendChild(roomDiv);
+            }
+            
+            document.getElementById('saved-rooms-display').style.display = Object.keys(savedRooms).length > 0 ? 'block' : 'none';
+        }
+        
+        // Feedback system
+        function showFeedback(emoji, title, message) {
+            document.getElementById('feedbackEmoji').textContent = emoji;
+            document.getElementById('feedbackTitle').textContent = title;
+            document.getElementById('feedbackMessage').textContent = message;
+            document.getElementById('feedbackModal').style.display = 'flex';
+            createConfetti();
+        }
+        
+        function closeFeedback() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+        
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.opacity = Math.random() + 0.5;
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.style.transition = 'all 1s';
+                    confetti.style.top = '100vh';
+                    confetti.style.opacity = '0';
+                    setTimeout(() => confetti.remove(), 1000);
+                }, 10);
+            }
+        }
+        
+        // Progress system
+        function updateProgress(points) {
+            currentProgress += points;
+            if (currentProgress > 100) currentProgress = 100;
+            
+            document.getElementById('main-progress').style.width = currentProgress + '%';
+            
+            // Check for badges
+            checkForBadges();
+        }
+        
+        function checkForBadges() {
+            const badges = [
+                { threshold: 10, name: 'Home Explorer', emoji: '🔍' },
+                { threshold: 25, name: 'Room Expert', emoji: '🛏️' },
+                { threshold: 50, name: 'House Designer', emoji: '🏠' },
+                { threshold: 75, name: 'Home Storyteller', emoji: '📚' },
+                { threshold: 100, name: 'Master of Homes', emoji: '👑' }
+            ];
+            
+            const container = document.getElementById('badges-container');
+            container.innerHTML = '';
+            
+            badges.forEach(badge => {
+                if (currentProgress >= badge.threshold && !earnedBadges.includes(badge.name)) {
+                    earnedBadges.push(badge.name);
+                    const badgeElement = document.createElement('span');
+                    badgeElement.className = 'achievement-badge';
+                    badgeElement.textContent = `${badge.emoji} ${badge.name}`;
+                    container.appendChild(badgeElement);
+                    showFeedback(badge.emoji, 'New Badge!', `You earned the ${badge.name} badge!`);
+                }
+            });
+        }
+        
+        // Conversation functions
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (message) {
+                const container = document.getElementById('chat-container');
+                const bubble = document.createElement('div');
+                bubble.className = 'conversation-bubble';
+                bubble.style.marginLeft = 'auto';
+                bubble.style.marginRight = '10px';
+                bubble.innerHTML = `<p><strong>${studentName || 'You'}:</strong> ${message}</p>`;
+                container.appendChild(bubble);
+                input.value = '';
+                container.scrollTop = container.scrollHeight;
+                updateProgress(2);
+                
+                // Simulate response after a delay
+                setTimeout(() => {
+                    const responses = [
+                        "That's interesting! Tell me more about that.",
+                        "I'd love to hear more about your home.",
+                        "What else makes your home special?",
+                        "That sounds wonderful!",
+                        "Homes are amazing places, aren't they?"
+                    ];
+                    const response = responses[Math.floor(Math.random() * responses.length)];
+                    const responseBubble = document.createElement('div');
+                    responseBubble.className = 'conversation-bubble';
+                    responseBubble.innerHTML = `<p>${response}</p>`;
+                    container.appendChild(responseBubble);
+                    container.scrollTop = container.scrollHeight;
+                }, 1000);
+            }
+        }
+        
+        function askRandomQuestion() {
+            const questions = [
+                "What's your favorite room in your home?",
+                "What does your bedroom look like?",
+                "Where do you eat dinner with your family?",
+                "What's something special in your home?",
+                "What sounds do you hear in your home?"
+            ];
+            const question = questions[Math.floor(Math.random() * questions.length)];
+            
+            const container = document.getElementById('chat-container');
+            const bubble = document.createElement('div');
+            bubble.className = 'conversation-bubble';
+            bubble.innerHTML = `<p>${question}</p>`;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function startTopic(topic) {
+            const topics = {
+                'favorite-room': "Tell me about your favorite room in your home",
+                'family-time': "What do you like to do with your family at home?",
+                'home-sounds': "What sounds do you hear in your home?",
+                'morning-routine': "What do you do in the morning at home?"
+            };
+            
+            const container = document.getElementById('chat-container');
+            const bubble = document.createElement('div');
+            bubble.className = 'conversation-bubble';
+            bubble.innerHTML = `<p>${topics[topic]}</p>`;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Story functions
+        function tellStory(storyType) {
+            const stories = {
+                'lost-toy': "Once there was a special toy that got lost in the house. Where do you think it might be hiding?",
+                'moving-day': "Imagine your family is moving to a new home. What would you pack first?",
+                'magic-house': "What if your house had magical powers? What would it do?",
+                'pet-adventure': "If your pet could explore the house alone, what would they discover?"
+            };
+            
+            currentStory = storyType;
+            document.getElementById('story-content').innerHTML = `<p>${stories[storyType]}</p>`;
+            document.getElementById('story-display').style.display = 'block';
+        }
+        
+        function continueStory() {
+            if (!currentStory) return;
+            
+            const continuations = {
+                'lost-toy': [
+                    "The toy was hiding under the bed all along!",
+                    "The toy was in the toy box, but buried under other toys.",
+                    "The family dog had taken it outside!"
+                ],
+                'moving-day': [
+                    "The moving truck arrived with all your things!",
+                    "You discovered a secret room in the new house!",
+                    "Your favorite toy got left behind at the old house!"
+                ],
+                'magic-house': [
+                    "The house grew legs and went for a walk!",
+                    "The rooms started changing places by themselves!",
+                    "The refrigerator started making any food you wished for!"
+                ],
+                'pet-adventure': [
+                    "Your pet found a secret stash of treats!",
+                    "Your pet discovered how to open doors!",
+                    "Your pet made friends with a mouse living in the walls!"
+                ]
+            };
+            
+            const continuation = continuations[currentStory][Math.floor(Math.random() * continuations[currentStory].length)];
+            document.getElementById('story-content').innerHTML += `<p>${continuation}</p>`;
+        }
+        
+        function shareStory() {
+            const story = document.getElementById('house-story').value.trim();
+            if (story) {
+                showFeedback('📖', 'Story Shared!', 'What a creative story about your home!');
+                updateProgress(5);
+            }
+        }
+        
+        // Compare homes functions
+        function compareHomes() {
+            const material = document.getElementById('home-material').value.trim();
+            const rooms = document.getElementById('home-rooms').value.trim();
+            
+            if (material && rooms) {
+                showFeedback('🌍', 'Comparison', `Your ${material} home with ${rooms} rooms is unique and special!`);
+                updateProgress(5);
+            }
+        }
+        
+        function exploreHome(type) {
+            const homes = {
+                'igloo': "Igloos are made of ice blocks and keep people warm inside!",
+                'houseboat': "Houseboats float on water and rock gently with the waves.",
+                'treehouse': "Tree houses are built in trees and feel like secret forts.",
+                'apartment': "Apartments are in big buildings with many neighbors nearby.",
+                'farmhouse': "Farmhouses are in the country with lots of land and animals."
+            };
+            
+            showFeedback('🏠', type.charAt(0).toUpperCase() + type.slice(1), homes[type]);
+        }
+        
+        function discussCommonalities() {
+            const text = document.getElementById('home-commonalities').value.trim();
+            if (text) {
+                showFeedback('💡', 'Great Thinking!', 'You identified important things about homes!');
+                updateProgress(3);
+            }
+        }
+        
+        // Where do you live functions
+        function discussView() {
+            const view = document.getElementById('window-view').value.trim();
+            if (view) {
+                showFeedback('👀', 'Window View', 'Thanks for sharing what you see from your window!');
+                updateProgress(3);
+            }
+        }
+        
+        function customColor() {
+            showFeedback('🎨', 'Custom Color', 'Tell me about your house color!');
+            updateProgress(1);
+        }
+        
+        // Kitchen functions
+        function discussKitchen() {
+            const description = document.getElementById('kitchen-description').value.trim();
+            if (description) {
+                showFeedback('🍽️', 'Kitchen Tour', 'Your kitchen sounds wonderful!');
+                updateProgress(3);
+            }
+        }
+        
+        function shareBreakfastMemory() {
+            const memory = document.getElementById('breakfast-memory').value.trim();
+            if (memory) {
+                showFeedback('🧠', 'Memory Shared', 'Thanks for sharing your breakfast memory!');
+                updateProgress(3);
+            }
+        }
+        
+        function addIngredient(emoji) {
+            sandwichIngredients.push(emoji);
+            document.getElementById('sandwich').textContent = sandwichIngredients.join(' ');
+        }
+        
+        function celebrateSandwich() {
+            if (sandwichIngredients.length > 0) {
+                showFeedback('🥪', 'Yummy!', 'Your sandwich looks delicious!');
+                updateProgress(3);
+                sandwichIngredients = [];
+                document.getElementById('sandwich').textContent = '';
+            }
+        }
+        
+        // Silly house functions
+        function continueSillyConversation() {
+            const questions = [
+                "What's the silliest thing you can imagine in a house?",
+                "If your house could talk, what silly things would it say?",
+                "What if your bed was on the ceiling?"
+            ];
+            
+            document.getElementById('silly-question').textContent = questions[Math.floor(Math.random() * questions.length)];
+            updateProgress(2);
+        }
+        
+        function shareSillyIdea() {
+            const idea = document.getElementById('silly-idea').value.trim();
+            if (idea) {
+                showFeedback('🤪', 'Silly Idea!', 'That sounds hilarious!');
+                updateProgress(3);
+            }
+        }
+        
+        function createSillyRules() {
+            const rules = document.getElementById('silly-rules').value.trim();
+            if (rules) {
+                showFeedback('📜', 'Silly Rules!', 'Those rules would make life so funny!');
+                updateProgress(3);
+            }
+        }
+        
+        // Likes functions
+        function askAboutActivity(activity) {
+            const questions = {
+                'tv': "What's your favorite show to watch?",
+                'sleep': "What do you dream about when you sleep?",
+                'reading': "What's your favorite book to read at home?"
+            };
+            
+            document.getElementById('activity-question').textContent = questions[activity];
+            updateProgress(2);
+        }
+        
+        function discussRainyDay() {
+            const activity = document.getElementById('rainy-day-activity').value.trim();
+            if (activity) {
+                showFeedback('🌧️', 'Rainy Day Fun', 'That sounds like a perfect rainy day activity!');
+                updateProgress(3);
+            }
+        }
+        
+        function shareFamilyTime() {
+            const fun = document.getElementById('family-fun').value.trim();
+            if (fun) {
+                showFeedback('👨‍👩‍👧‍👦', 'Family Fun', 'Family time is the best time!');
+                updateProgress(3);
+            }
+        }
+        
+        // Draw house functions
+        function celebrateDrawing() {
+            const description = document.getElementById('house-description').value.trim();
+            if (description) {
+                showFeedback('🎨', 'Art Shared!', 'Your house drawing sounds amazing!');
+                updateProgress(3);
+            }
+        }
+        
+        function shareHouseFeatures() {
+            const features = document.getElementById('house-features').value.trim();
+            if (features) {
+                showFeedback('🏠', 'House Features', 'Your house has such interesting features!');
+                updateProgress(3);
+            }
+        }
+        
+        function shareDreamHouse() {
+            const dream = document.getElementById('dream-house').value.trim();
+            if (dream) {
+                showFeedback('✨', 'Dream House', 'Your dream house sounds incredible!');
+                updateProgress(5);
+            }
+        }
+    </script>
+</body>
+</html>
